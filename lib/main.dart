@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_jailbreak_detection/flutter_jailbreak_detection.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:root_jailbreak_sniffer/rjsniffer.dart';
 // import 'package:safe_device/safe_device.dart'; // Import the safe_device package
 import 'views/media_search_view.dart';
 
@@ -10,7 +10,7 @@ void main() async {
   // Check if the device is rooted
   bool isSafeDevice = await rootChecker();
 
-  if (!isSafeDevice) {
+  if (isSafeDevice) {
     // Handle the case where the device is not safe
     runApp(
       const MaterialApp(
@@ -24,16 +24,18 @@ void main() async {
     return;
   }
 
-  runApp(ProviderScope(child: MyApp()));
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 Future<bool> rootChecker() async {
   // bool isSafeDevice = await FlutterJailbreakDetection.jailbroken;
-  bool isSafeDevice = true;
+  bool isSafeDevice = await Rjsniffer.amICompromised() ?? false;
   return isSafeDevice;
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
