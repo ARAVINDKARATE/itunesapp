@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:itunesapp/view_models/selected_item_view_model.dart';
+import 'package:itunesapp/views/media_view.dart';
 import 'package:itunesapp/views/selectable_item_view.dart';
 
 class MediaSearchView extends ConsumerWidget {
@@ -52,9 +53,9 @@ class MediaSearchView extends ConsumerWidget {
                       ),
                     ),
                     style: const TextStyle(color: Colors.white),
-                    onSubmitted: (value) {
-                      _searchController.clear(); // Clear the text field
-                    },
+                    // onSubmitted: (value) {
+                    //   _searchController.clear(); // Clear the text field
+                    // },
                   ),
                   SizedBox(height: height * 0.04),
                   const Text(
@@ -106,6 +107,12 @@ class MediaSearchView extends ConsumerWidget {
                     onPressed: () async {
                       // Trigger search using the selected items
                       // Use selectedItems for search criteria
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => MediaViewScreen(),
+                        ),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       textStyle: const TextStyle(color: Colors.white),
