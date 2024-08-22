@@ -7,6 +7,8 @@ import 'package:itunesapp/views/selectable_item_view.dart';
 class MediaSearchView extends ConsumerWidget {
   final TextEditingController _searchController = TextEditingController();
 
+  MediaSearchView({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final height = MediaQuery.of(context).size.height;
@@ -110,7 +112,7 @@ class MediaSearchView extends ConsumerWidget {
                       await Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => MediaViewScreen(),
+                          builder: (context) => const MediaViewScreen(),
                         ),
                       );
                     },

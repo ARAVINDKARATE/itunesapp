@@ -69,7 +69,7 @@ class MediaTabView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return TabBarView(
+    return const TabBarView(
       children: [
         GridViewBuilder(),
         ListViewBuilder(),
@@ -79,6 +79,8 @@ class MediaTabView extends StatelessWidget {
 }
 
 class GridViewBuilder extends ConsumerWidget {
+  const GridViewBuilder({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedItems = ref.watch(selectedItemsProvider);
@@ -115,6 +117,8 @@ class GridViewBuilder extends ConsumerWidget {
 }
 
 class ListViewBuilder extends ConsumerWidget {
+  const ListViewBuilder({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedItems = ref.watch(selectedItemsProvider);

@@ -5,6 +5,8 @@ import 'package:itunesapp/view_models/selected_item_view_model.dart';
 class SelectableItemsScreen extends ConsumerWidget {
   final List<String> _items = ['Album', 'MovieArtist', 'Ebook', 'Movies', 'Musicvideo', 'Podcast', 'Song'];
 
+  SelectableItemsScreen({super.key});
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedItems = ref.watch(selectedItemsProvider);
@@ -42,7 +44,7 @@ class SelectableItemsScreen extends ConsumerWidget {
                   }
                 },
               ),
-              Divider(
+              const Divider(
                 thickness: 0.5,
                 indent: 15,
                 endIndent: 15,
