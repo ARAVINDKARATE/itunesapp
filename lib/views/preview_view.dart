@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:itunesapp/models/iTunes_response_model.dart';
 
@@ -28,68 +29,162 @@ class PreviewScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: Image.network(
-                mediaItem.artworkUrl100 ?? '',
-                height: MediaQuery.of(context).size.height * 0.4,
-                fit: BoxFit.contain,
+      body: SingleChildScrollView(
+        // Wrap the content with SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.only(top: 40),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              // Container with top and bottom borders to simulate dividers
+              Padding(
+                padding: const EdgeInsets.only(left: 20),
+                child: Container(
+                  decoration: const BoxDecoration(
+                    border: Border(
+                      top: BorderSide(color: Colors.white70, width: 0.5),
+                      bottom: BorderSide(color: Colors.white70, width: 0.5),
+                    ),
+                  ),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width * 0.3,
+                        height: MediaQuery.of(context).size.height * 0.2,
+                        color: Colors.black, // Set background color to black
+                        child: mediaItem.artworkUrl100 != null
+                            ? Image.network(
+                                mediaItem.artworkUrl100!,
+                                fit: BoxFit.cover,
+                              )
+                            : const Center(child: Text('No Image')),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 20, left: 20),
+                          child: Stack(
+                            children: [
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    mediaItem.artistName ?? 'Unknown Artist',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (mediaItem.collectionName != null)
+                                    Text(
+                                      mediaItem.collectionName ?? 'Unknown Collection',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  const SizedBox(height: 10),
+                                  Text(
+                                    mediaItem.primaryGenreName ?? 'Genre Unknown',
+                                    style: const TextStyle(
+                                      color: Color.fromARGB(255, 176, 98, 8),
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.w900,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ],
+                              ),
+                              SizedBox(
+                                height: MediaQuery.of(context).size.height * 0.16,
+                              ),
+                              const Positioned(
+                                bottom: 0,
+                                right: 10,
+                                child: Row(
+                                  children: [
+                                    Text(
+                                      'Preview',
+                                      style: TextStyle(
+                                        color: Colors.blue,
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                    SizedBox(width: 10),
+                                    Icon(
+                                      CupertinoIcons.compass,
+                                      color: Colors.blue,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
-            ),
-            const SizedBox(height: 20),
-            Text(
-              mediaItem.artistName ?? 'Unknown Artist',
-              style: const TextStyle(
+              const SizedBox(height: 20),
+              const Text(
+                'Preview',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 16,
+                  fontWeight: FontWeight.normal,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+              const Divider(
                 color: Colors.white,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+                thickness: 0.4,
+                height: 0.3,
+                indent: 20,
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              mediaItem.collectionName ?? 'No Collection Name',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 18,
+              // Second Section: Preview
+              Container(
+                height: MediaQuery.of(context).size.height * 0.3,
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Track Name: ${mediaItem.trackName ?? 'No Track Name'}',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
+              const SizedBox(height: 10),
+              const Divider(
+                color: Colors.white,
+                thickness: 0.4,
+                height: 0.3,
+                indent: 20,
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Collection Price: ${mediaItem.collectionPrice?.toStringAsFixed(2) ?? 'N/A'} USD',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
+              const SizedBox(height: 20),
+              const Text(
+                'Description:',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.normal,
+                ),
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Release Date: ${mediaItem.releaseDate?.substring(0, 10) ?? 'N/A'}',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
+              const Divider(
+                color: Colors.white,
+                thickness: 0.4,
+                height: 0.3,
+                indent: 20,
               ),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Genre: ${mediaItem.primaryGenreName ?? 'N/A'}',
-              style: const TextStyle(
-                color: Colors.white70,
-                fontSize: 16,
+              const SizedBox(height: 10),
+              Padding(
+                padding: const EdgeInsets.all(20.0),
+                child: Text(
+                  mediaItem.description ?? "N/A",
+                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

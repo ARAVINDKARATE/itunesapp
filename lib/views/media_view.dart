@@ -327,7 +327,7 @@ class ListViewBuilder extends StatelessWidget {
                                       child: item.artworkUrl100 != null
                                           ? Image.network(
                                               item.artworkUrl100!,
-                                              fit: BoxFit.contain,
+                                              fit: BoxFit.cover,
                                             )
                                           : const Center(child: Text('No Image')),
                                     ),

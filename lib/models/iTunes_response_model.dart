@@ -45,6 +45,7 @@ class MediaItem {
   final String? primaryGenreName;
   final String? contentAdvisoryRating;
   final bool? isStreamable;
+  final String? description; // Field for audiobooks or other media types
 
   MediaItem({
     this.wrapperType,
@@ -77,6 +78,7 @@ class MediaItem {
     this.primaryGenreName,
     this.contentAdvisoryRating,
     this.isStreamable,
+    this.description, // New field for description
   });
 
   factory MediaItem.fromJson(Map<String, dynamic> json) {
@@ -111,6 +113,7 @@ class MediaItem {
       primaryGenreName: json['primaryGenreName'] as String?,
       contentAdvisoryRating: json['contentAdvisoryRating'] as String?,
       isStreamable: json['isStreamable'] as bool?,
+      description: json['description'] as String?, // Extract description
     );
   }
 
@@ -146,6 +149,7 @@ class MediaItem {
     String? primaryGenreName,
     String? contentAdvisoryRating,
     bool? isStreamable,
+    String? description, // New field for description
   }) {
     return MediaItem(
       wrapperType: wrapperType ?? this.wrapperType,
@@ -178,6 +182,7 @@ class MediaItem {
       primaryGenreName: primaryGenreName ?? this.primaryGenreName,
       contentAdvisoryRating: contentAdvisoryRating ?? this.contentAdvisoryRating,
       isStreamable: isStreamable ?? this.isStreamable,
+      description: description ?? this.description, // Handle description
     );
   }
 }
