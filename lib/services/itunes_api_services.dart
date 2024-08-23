@@ -12,6 +12,7 @@ class ITunesApiService {
         'https://itunes.apple.com/search',
         queryParameters: {
           'term': query,
+          'limit': 300,
           // 'media': 'music', // Assuming selectedItems is a list of media types
         },
       );
