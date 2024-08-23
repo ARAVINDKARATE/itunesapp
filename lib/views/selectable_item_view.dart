@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:itunesapp/view_models/selected_item_view_model.dart';
 
 class SelectableItemsScreen extends ConsumerWidget {
-  final List<String> _items = ['Album', 'MovieArtist', 'Ebook', 'Movies', 'Musicvideo', 'Podcast', 'Song'];
+  final List<String> _items = ['Album', 'MovieArtist', 'Ebook', 'Movie', 'Musicvideo', 'Podcast', 'Song'];
 
   SelectableItemsScreen({super.key});
 

@@ -6,7 +6,8 @@ import 'package:itunesapp/view_models/media_view_model.dart';
 import 'package:itunesapp/views/preview_view.dart';
 
 class MediaViewScreen extends ConsumerWidget {
-  const MediaViewScreen({super.key});
+  final List<String> selectedItems;
+  const MediaViewScreen(this.selectedItems, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -33,7 +34,7 @@ class MediaViewScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: mediaItemsState.when(
-        data: (mediaItems) => MediaTabView(mediaItems: mediaItems),
+        data: (mediaItems) => MediaTabView(mediaItems: mediaItems, selectedItems: selectedItems),
         loading: () => Center(
           child: Container(
             padding: const EdgeInsets.all(10),
@@ -72,11 +73,40 @@ class MediaViewScreen extends ConsumerWidget {
 
 class MediaTabView extends StatelessWidget {
   final ITunesResponse mediaItems;
+  final List<String> selectedItems;
 
-  const MediaTabView({super.key, required this.mediaItems});
+  const MediaTabView({super.key, required this.mediaItems, required this.selectedItems});
 
   @override
   Widget build(BuildContext context) {
+    // Step 1: Update `kind` values to "None" if they are null
+    final updatedMediaItems = mediaItems.results.map((item) {
+      // Create a new MediaItem with updated `kind` if it's null
+      final updatedItem = item.copyWith(
+        kind: item.kind ?? 'None',
+      );
+      return updatedItem;
+    }).toList();
+
+// Step 2: Convert to lowercase and filter based on the updated `kind`
+    final lowercaseSelectedKinds = selectedItems.map((kind) => kind.toLowerCase()).toList();
+
+    final List<MediaItem> filteredItems = updatedMediaItems.where((item) {
+      final itemKindLower = item.kind!.toLowerCase();
+      return lowercaseSelectedKinds.any((kind) => itemKindLower.contains(kind));
+    }).toList();
+
+// Create the filtered response
+    final filteredResponse = (selectedItems.isEmpty)
+        ? ITunesResponse(
+            resultCount: updatedMediaItems.length, // Set the result count
+            results: updatedMediaItems,
+          )
+        : ITunesResponse(
+            resultCount: filteredItems.length, // Set the result count
+            results: filteredItems,
+          );
+
     return DefaultTabController(
       length: 2,
       child: Scaffold(
@@ -112,8 +142,8 @@ class MediaTabView extends StatelessWidget {
         ),
         body: TabBarView(
           children: [
-            GridViewBuilder(mediaItems: mediaItems),
-            ListViewBuilder(mediaItems: mediaItems),
+            GridViewBuilder(mediaItems: filteredResponse),
+            ListViewBuilder(mediaItems: filteredResponse),
           ],
         ),
       ),
@@ -132,7 +162,7 @@ class GridViewBuilder extends StatelessWidget {
 
     for (var item in mediaItems.results) {
       if (!groupedByKind.containsKey(item.kind)) {
-        groupedByKind[item.kind ?? 'Unknown'] = [];
+        groupedByKind[item.kind!] = [];
       }
       groupedByKind[item.kind]?.add(item);
     }
@@ -255,91 +285,93 @@ class ListViewBuilder extends StatelessWidget {
             final kind = entry.key;
             final items = entry.value;
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  color: Colors.grey[900], // Set background color to black
-                  padding: const EdgeInsets.all(10.0),
-                  child: Text(
-                    kind.substring(0, 1).toUpperCase() + kind.substring(1),
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  child: Column(
-                    children: items.map((item) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PreviewScreen(mediaItem: item),
-                            ),
-                          );
-                        },
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 10.0),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Container(
-                                width: MediaQuery.of(context).size.width * 0.3,
-                                height: MediaQuery.of(context).size.height * 0.16,
-                                color: Colors.black, // Set background color to black
-                                child: item.artworkUrl100 != null
-                                    ? Image.network(
-                                        item.artworkUrl100!,
-                                        fit: BoxFit.contain,
-                                      )
-                                    : const Center(child: Text('No Image')),
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        item.artistName ?? 'Unknown Artist',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 16,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      if (item.collectionName != null)
-                                        Text(
-                                          item.collectionName!,
-                                          style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
+            return (items.isNotEmpty)
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.grey[900], // Set background color to black
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          kind.substring(0, 1).toUpperCase() + kind.substring(1),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-                const SizedBox(height: 20),
-              ],
-            );
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                        child: Column(
+                          children: items.map((item) {
+                            return GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => PreviewScreen(mediaItem: item),
+                                  ),
+                                );
+                              },
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Container(
+                                      width: MediaQuery.of(context).size.width * 0.3,
+                                      height: MediaQuery.of(context).size.height * 0.16,
+                                      color: Colors.black, // Set background color to black
+                                      child: item.artworkUrl100 != null
+                                          ? Image.network(
+                                              item.artworkUrl100!,
+                                              fit: BoxFit.contain,
+                                            )
+                                          : const Center(child: Text('No Image')),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              item.artistName ?? 'Unknown Artist',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            if (item.collectionName != null)
+                                              Text(
+                                                item.collectionName!,
+                                                style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 14,
+                                                  fontWeight: FontWeight.bold,
+                                                ),
+                                                overflow: TextOverflow.ellipsis,
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      ),
+                      const SizedBox(height: 20),
+                    ],
+                  )
+                : const SizedBox();
           }).toList(),
         ),
       ),

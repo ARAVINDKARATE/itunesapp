@@ -8,7 +8,7 @@ class ITunesResponse {
     var list = json['results'] as List;
     List<MediaItem> mediaList = list.map((i) => MediaItem.fromJson(i)).toList();
     return ITunesResponse(
-      resultCount: json['resultCount'],
+      resultCount: json['resultCount'] as int,
       results: mediaList,
     );
   }
@@ -16,30 +16,30 @@ class ITunesResponse {
 
 class MediaItem {
   final String? wrapperType;
-  final String? kind;
+  final String? kind; // 'song' for tracks, null for other types
   final int? artistId;
   final int? collectionId;
-  final int? trackId;
+  final int? trackId; // Only used for 'track' type
   final String? artistName;
   final String? collectionName;
-  final String? trackName;
+  final String? trackName; // Only used for 'track' type
   final String? artistViewUrl;
   final String? collectionViewUrl;
-  final String? trackViewUrl;
+  final String? trackViewUrl; // Only used for 'track' type
   final String? previewUrl;
   final String? artworkUrl30;
   final String? artworkUrl60;
   final String? artworkUrl100;
   final double? collectionPrice;
-  final double? trackPrice;
+  final double? trackPrice; // Only used for 'track' type
   final String? releaseDate;
   final String? collectionExplicitness;
-  final String? trackExplicitness;
-  final int? discCount;
-  final int? discNumber;
-  final int? trackCount;
-  final int? trackNumber;
-  final int? trackTimeMillis;
+  final String? trackExplicitness; // Only used for 'track' type
+  final int? discCount; // Only used for 'track' type
+  final int? discNumber; // Only used for 'track' type
+  final int? trackCount; // Only used for 'track' type
+  final int? trackNumber; // Only used for 'track' type
+  final int? trackTimeMillis; // Only used for 'track' type
   final String? country;
   final String? currency;
   final String? primaryGenreName;
@@ -111,6 +111,73 @@ class MediaItem {
       primaryGenreName: json['primaryGenreName'] as String?,
       contentAdvisoryRating: json['contentAdvisoryRating'] as String?,
       isStreamable: json['isStreamable'] as bool?,
+    );
+  }
+
+  // CopyWith method
+  MediaItem copyWith({
+    String? wrapperType,
+    String? kind,
+    int? artistId,
+    int? collectionId,
+    int? trackId,
+    String? artistName,
+    String? collectionName,
+    String? trackName,
+    String? artistViewUrl,
+    String? collectionViewUrl,
+    String? trackViewUrl,
+    String? previewUrl,
+    String? artworkUrl30,
+    String? artworkUrl60,
+    String? artworkUrl100,
+    double? collectionPrice,
+    double? trackPrice,
+    String? releaseDate,
+    String? collectionExplicitness,
+    String? trackExplicitness,
+    int? discCount,
+    int? discNumber,
+    int? trackCount,
+    int? trackNumber,
+    int? trackTimeMillis,
+    String? country,
+    String? currency,
+    String? primaryGenreName,
+    String? contentAdvisoryRating,
+    bool? isStreamable,
+  }) {
+    return MediaItem(
+      wrapperType: wrapperType ?? this.wrapperType,
+      kind: kind ?? this.kind,
+      artistId: artistId ?? this.artistId,
+      collectionId: collectionId ?? this.collectionId,
+      trackId: trackId ?? this.trackId,
+      artistName: artistName ?? this.artistName,
+      collectionName: collectionName ?? this.collectionName,
+      trackName: trackName ?? this.trackName,
+      artistViewUrl: artistViewUrl ?? this.artistViewUrl,
+      collectionViewUrl: collectionViewUrl ?? this.collectionViewUrl,
+      trackViewUrl: trackViewUrl ?? this.trackViewUrl,
+      previewUrl: previewUrl ?? this.previewUrl,
+      artworkUrl30: artworkUrl30 ?? this.artworkUrl30,
+      artworkUrl60: artworkUrl60 ?? this.artworkUrl60,
+      artworkUrl100: artworkUrl100 ?? this.artworkUrl100,
+      collectionPrice: collectionPrice ?? this.collectionPrice,
+      trackPrice: trackPrice ?? this.trackPrice,
+      releaseDate: releaseDate ?? this.releaseDate,
+      collectionExplicitness: collectionExplicitness ?? this.collectionExplicitness,
+      trackExplicitness: trackExplicitness ?? this.trackExplicitness,
+      discCount: discCount ?? this.discCount,
+      discNumber: discNumber ?? this.discNumber,
+      trackCount: trackCount ?? this.trackCount,
+      trackNumber: trackNumber ?? this.trackNumber,
+      trackTimeMillis: trackTimeMillis ?? this.trackTimeMillis,
+      country: country ?? this.country,
+      currency: currency ?? this.currency,
+      primaryGenreName: primaryGenreName ?? this.primaryGenreName,
+      contentAdvisoryRating: contentAdvisoryRating ?? this.contentAdvisoryRating,
+      isStreamable: isStreamable ?? this.isStreamable,
     );
   }
 }

@@ -115,7 +115,7 @@ class MediaSearchView extends ConsumerWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const MediaViewScreen(),
+                            builder: (context) => MediaViewScreen(selectedItems),
                           ),
                         );
                       } else {
