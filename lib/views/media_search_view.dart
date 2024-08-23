@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:itunesapp/models/iTunes_response_model.dart';
+import 'package:itunesapp/view_models/media_view_model.dart';
 import 'package:itunesapp/view_models/selected_item_view_model.dart';
 import 'package:itunesapp/views/media_view.dart';
 import 'package:itunesapp/views/selectable_item_view.dart';
@@ -14,6 +16,38 @@ class MediaSearchView extends ConsumerWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final selectedItems = ref.watch(selectedItemsProvider);
+    final mediaItemsState = ref.watch(mediaItemsProvider);
+
+    ref.listen<AsyncValue<ITunesResponse>>(mediaItemsProvider, (previous, next) {
+      next.when(
+        data: (mediaItems) {
+          if (mediaItems.results.isEmpty) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("No media items found")),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => MediaViewScreen(mediaItems: mediaItems),
+              ),
+            );
+          }
+        },
+        loading: () {
+          // Optionally show a loading spinner
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text("Loading...")),
+          );
+        },
+        error: (err, stack) {
+          // Handle error and show a message to the user
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text("Error fetching media items: $err")),
+          );
+        },
+      );
+    });
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -55,9 +89,6 @@ class MediaSearchView extends ConsumerWidget {
                       ),
                     ),
                     style: const TextStyle(color: Colors.white),
-                    // onSubmitted: (value) {
-                    //   _searchController.clear(); // Clear the text field
-                    // },
                   ),
                   SizedBox(height: height * 0.04),
                   const Text(
@@ -107,19 +138,24 @@ class MediaSearchView extends ConsumerWidget {
                   SizedBox(height: height * 0.04),
                   ElevatedButton(
                     onPressed: () async {
-                      // Trigger search using the selected items
-                      // Use selectedItems for search criteria
-                      await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const MediaViewScreen(),
-                        ),
-                      );
+                      final searchQuery = _searchController.text;
+
+                      if (searchQuery.isNotEmpty) {
+                        // Trigger the state update in the provider
+                        ref.read(mediaItemsProvider.notifier).searchMedia(searchQuery, selectedItems);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text("Please specify Search Keyword", style: TextStyle(color: Colors.white, fontSize: 16)),
+                            backgroundColor: Colors.grey[800],
+                          ),
+                        );
+                      }
                     },
                     style: ElevatedButton.styleFrom(
                       textStyle: const TextStyle(color: Colors.white),
                       backgroundColor: Colors.grey[800],
-                      minimumSize: Size(MediaQuery.of(context).size.width, 48.0),
+                      minimumSize: Size(width, 48.0),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
