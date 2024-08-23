@@ -50,6 +50,12 @@
     <key>NSAllowsArbitraryLoads</key>
     <true/>
     </dict>
+	<key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>http</string>
+        <string>https</string>
+    </array>
+
 	<!-- <key>NSMicrophoneUsageDescription</key>
     <string>We need access to the microphone for audio playback.</string>
     <key>NSCameraUsageDescription</key>

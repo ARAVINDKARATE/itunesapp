@@ -1,14 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:itunesapp/models/iTunes_response_model.dart';
+import 'package:itunesapp/provider/preview_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PreviewScreen extends StatelessWidget {
+class PreviewScreen extends ConsumerWidget {
+  // Changed to ConsumerWidget
   final MediaItem mediaItem;
 
   const PreviewScreen({super.key, required this.mediaItem});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    // Added WidgetRef
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -30,13 +34,11 @@ class PreviewScreen extends StatelessWidget {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        // Wrap the content with SingleChildScrollView
         child: Padding(
           padding: const EdgeInsets.only(top: 40),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Container with top and bottom borders to simulate dividers
               Padding(
                 padding: const EdgeInsets.only(left: 20),
                 child: Container(
@@ -52,7 +54,7 @@ class PreviewScreen extends StatelessWidget {
                       Container(
                         width: MediaQuery.of(context).size.width * 0.3,
                         height: MediaQuery.of(context).size.height * 0.2,
-                        color: Colors.black, // Set background color to black
+                        color: Colors.black,
                         child: mediaItem.artworkUrl100 != null
                             ? Image.network(
                                 mediaItem.artworkUrl100!,
@@ -103,26 +105,32 @@ class PreviewScreen extends StatelessWidget {
                               SizedBox(
                                 height: MediaQuery.of(context).size.height * 0.16,
                               ),
-                              const Positioned(
+                              Positioned(
                                 bottom: 0,
                                 right: 10,
-                                child: Row(
-                                  children: [
-                                    Text(
-                                      'Preview',
-                                      style: TextStyle(
-                                        color: Colors.blue,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    // Read the MediaViewModel and trigger the openUrl method
+                                    ref.read(PreviewModelProvider).openUrl(mediaItem.trackViewUrl, mediaItem.artistViewUrl); // Use ref.read
+                                  },
+                                  child: const Row(
+                                    children: [
+                                      Text(
+                                        'Preview',
+                                        style: TextStyle(
+                                          color: Colors.blue,
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
                                       ),
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    SizedBox(width: 10),
-                                    Icon(
-                                      CupertinoIcons.compass,
-                                      color: Colors.blue,
-                                    ),
-                                  ],
+                                      SizedBox(width: 10),
+                                      Icon(
+                                        CupertinoIcons.compass,
+                                        color: Colors.blue,
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ],
@@ -149,7 +157,6 @@ class PreviewScreen extends StatelessWidget {
                 height: 0.3,
                 indent: 20,
               ),
-              // Second Section: Preview
               Container(
                 height: MediaQuery.of(context).size.height * 0.3,
               ),

@@ -24,6 +24,8 @@ void main() async {
     return;
   }
 
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
