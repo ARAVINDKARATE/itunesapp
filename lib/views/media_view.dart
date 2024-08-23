@@ -89,33 +89,90 @@ class GridViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      padding: const EdgeInsets.all(10.0),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        crossAxisSpacing: 10.0,
-        mainAxisSpacing: 10.0,
+    // Assuming the media items are of type MediaItem (replace with your actual class name)
+    final Map<String, List<MediaItem>> groupedByKind = {};
+
+    for (var item in mediaItems.results) {
+      if (!groupedByKind.containsKey(item.kind)) {
+        groupedByKind[item.kind ?? 'Unknown'] = [];
+      }
+      groupedByKind[item.kind]?.add(item);
+    }
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: groupedByKind.entries.map((entry) {
+            final kind = entry.key;
+            final items = entry.value;
+
+            return (items.isNotEmpty)
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Heading for each kind
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        color: Colors.grey[900],
+                        padding: const EdgeInsets.all(10.0),
+                        child: Text(
+                          kind.substring(0, 1).toUpperCase() + kind.substring(1),
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 20,
+                      ),
+                      // Grid of media items for each kind
+                      GridView.builder(
+                        shrinkWrap: true, // Ensures GridView takes up only as much space as needed
+                        physics: const NeverScrollableScrollPhysics(), // Disable GridView scrolling
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: 3, crossAxisSpacing: 10.0, mainAxisSpacing: 0, childAspectRatio: 6 / 8),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final item = items[index];
+                          return GridTile(
+                            child: Column(
+                              children: [
+                                Container(
+                                  // height: MediaQuery.of(context).size.height * 0.3,
+                                  color: Colors.black,
+                                  child: Center(
+                                    child: Image.network(
+                                      item.artworkUrl100.toString(),
+                                    ),
+                                  ),
+                                ),
+                                Container(
+                                  padding: const EdgeInsets.all(10),
+                                  child: Text(
+                                    item.artistName.toString(),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.center,
+                                  ),
+                                )
+                              ],
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  )
+                : const SizedBox();
+          }).toList(),
+        ),
       ),
-      itemCount: mediaItems.resultCount,
-      itemBuilder: (context, index) {
-        final item = mediaItems.results[index];
-        return GridTile(
-          header: Text(
-            item.artistName.toString(),
-            style: const TextStyle(color: Colors.white),
-            textAlign: TextAlign.center,
-          ),
-          child: Container(
-            color: Colors.grey[800],
-            child: Center(
-              child: Text(
-                item.kind.toString(),
-                style: const TextStyle(color: Colors.white, fontSize: 16),
-              ),
-            ),
-          ),
-        );
-      },
     );
   }
 }
@@ -127,21 +184,99 @@ class ListViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      padding: const EdgeInsets.all(10.0),
-      itemCount: mediaItems.resultCount,
-      itemBuilder: (context, index) {
-        final item = mediaItems.results[index];
-        return Card(
-          color: Colors.grey[800],
-          child: ListTile(
-            title: Text(
-              item.artistName.toString(),
-              style: const TextStyle(color: Colors.white),
-            ),
-          ),
-        );
-      },
+    // Group items by their kind
+    final Map<String, List<MediaItem>> groupedByKind = {};
+
+    for (var item in mediaItems.results) {
+      if (item.kind != null) {
+        if (!groupedByKind.containsKey(item.kind)) {
+          groupedByKind[item.kind!] = [];
+        }
+        groupedByKind[item.kind!]?.add(item);
+      }
+    }
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: groupedByKind.entries.map((entry) {
+            final kind = entry.key;
+            final items = entry.value;
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // Heading for each kind
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  color: Colors.grey[900],
+                  padding: const EdgeInsets.all(10.0),
+                  child: Text(
+                    kind.substring(0, 1).toUpperCase() + kind.substring(1),
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+                // List of media items for each kind
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                  child: Column(
+                    children: items.map((item) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Row(
+                          children: [
+                            Container(
+                              color: Colors.black,
+                              child: item.artworkUrl100 != null
+                                  ? Image.network(
+                                      item.artworkUrl100!,
+                                      fit: BoxFit.cover,
+                                    )
+                                  : const Center(child: Text('No Image')),
+                            ),
+                            const SizedBox(width: 10),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    item.artistName ?? 'Unknown Artist',
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  if (item.collectionName != null)
+                                    Text(
+                                      item.collectionName!,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 14,
+                                      ),
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                ),
+                const SizedBox(height: 20),
+              ],
+            );
+          }).toList(),
+        ),
+      ),
     );
   }
 }
