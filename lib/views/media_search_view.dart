@@ -16,7 +16,7 @@ class MediaSearchView extends ConsumerWidget {
     final height = MediaQuery.of(context).size.height;
     final width = MediaQuery.of(context).size.width;
     final selectedItems = ref.watch(selectedItemsProvider);
-    final mediaItemsState = ref.watch(mediaItemsProvider);
+    // final mediaItemsState = ref.watch(mediaItemsProvider);
 
     ref.listen<AsyncValue<ITunesResponse>>(mediaItemsProvider, (previous, next) {
       next.when(
