@@ -89,24 +89,23 @@ class MediaTabView extends StatelessWidget {
       return updatedItem;
     }).toList();
 
-// Step 2: Convert to lowercase and filter based on the updated `kind`
-    final lowercaseSelectedKinds = selectedItems.map((kind) => kind.toLowerCase()).toList();
+// // Step 2: Convert to lowercase and filter based on the updated `kind`
+//     final lowercaseSelectedKinds = selectedItems.map((kind) => kind.toLowerCase()).toList();
 
-    final List<MediaItem> filteredItems = updatedMediaItems.where((item) {
-      final itemKindLower = item.kind!.toLowerCase();
-      return lowercaseSelectedKinds.any((kind) => itemKindLower.contains(kind));
-    }).toList();
+//     final List<MediaItem> filteredItems = updatedMediaItems.where((item) {
+//       final itemKindLower = item.kind!.toLowerCase();
+//       return lowercaseSelectedKinds.any((kind) => itemKindLower.contains(kind));
+//     }).toList();
 
 // Create the filtered response
-    final filteredResponse = (selectedItems.isEmpty)
-        ? ITunesResponse(
-            resultCount: updatedMediaItems.length, // Set the result count
-            results: updatedMediaItems,
-          )
-        : ITunesResponse(
-            resultCount: filteredItems.length, // Set the result count
-            results: filteredItems,
-          );
+    final filteredResponse = ITunesResponse(
+      resultCount: updatedMediaItems.length, // Set the result count
+      results: updatedMediaItems,
+    );
+    // : ITunesResponse(
+    //     resultCount: filteredItems.length, // Set the result count
+    //     results: filteredItems,
+    //   );
 
     return DefaultTabController(
       length: 2,

@@ -17,7 +17,7 @@ class MediaItemsNotifier extends StateNotifier<AsyncValue<ITunesResponse>> {
     state = const AsyncValue.loading();
 
     try {
-      final result = await _apiService.fetchMediaItems(query);
+      final result = await _apiService.fetchMediaItems(query, selectedItems);
       state = AsyncValue.data(result);
     } catch (e, stackTrace) {
       state = AsyncValue.error(e, stackTrace);
