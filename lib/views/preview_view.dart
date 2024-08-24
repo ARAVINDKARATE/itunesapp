@@ -1,8 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:itunesapp/models/iTunes_response_model.dart';
 import 'package:itunesapp/provider/preview_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:itunesapp/utilities/html_to_markdown_util.dart';
 
 class PreviewScreen extends ConsumerWidget {
   // Changed to ConsumerWidget
@@ -12,7 +15,9 @@ class PreviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Added WidgetRef
+    final previewUrl = mediaItem.previewUrl ?? '';
+    final isValidUrl = Uri.tryParse(previewUrl)?.hasAbsolutePath ?? false;
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -72,7 +77,7 @@ class PreviewScreen extends ConsumerWidget {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    mediaItem.artistName ?? 'Unknown Artist',
+                                    mediaItem.trackName ?? 'Unknown',
                                     style: const TextStyle(
                                       color: Colors.white,
                                       fontSize: 18,
@@ -82,7 +87,7 @@ class PreviewScreen extends ConsumerWidget {
                                   ),
                                   if (mediaItem.collectionName != null)
                                     Text(
-                                      mediaItem.collectionName ?? 'Unknown Collection',
+                                      mediaItem.artistName ?? mediaItem.collectionName ?? 'Unknown',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 16,
@@ -158,7 +163,33 @@ class PreviewScreen extends ConsumerWidget {
                 indent: 20,
               ),
               Container(
-                height: MediaQuery.of(context).size.height * 0.3,
+                height: MediaQuery.of(context).size.height * 0.26,
+                child: isValidUrl
+                    ? InAppWebView(
+                        initialUrlRequest: URLRequest(
+                          url: WebUri(previewUrl), // Ensure WebUri is correctly used
+                        ),
+                        initialOptions: InAppWebViewGroupOptions(
+                          crossPlatform: InAppWebViewOptions(
+                            javaScriptEnabled: true,
+                          ),
+                        ),
+                        onWebViewCreated: (controller) {
+                          print('WebView created');
+                        },
+                        onLoadStart: (controller, url) {
+                          print('Loading URL: $url');
+                        },
+                        onLoadStop: (controller, url) {
+                          print('Loaded URL: $url');
+                        },
+                      )
+                    : const Center(
+                        child: Text(
+                          'Preview URL is not valid',
+                          style: TextStyle(color: Colors.white),
+                        ),
+                      ),
               ),
               const SizedBox(height: 10),
               const Divider(
@@ -185,9 +216,11 @@ class PreviewScreen extends ConsumerWidget {
               const SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.all(20.0),
-                child: Text(
-                  mediaItem.description ?? "N/A",
-                  style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                child: MarkdownBody(
+                  data: HtmlToMarkdownUtil.convert(mediaItem.description ?? "N/A"),
+                  styleSheet: MarkdownStyleSheet(
+                    p: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                  ),
                 ),
               ),
             ],

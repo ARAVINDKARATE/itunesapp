@@ -232,7 +232,7 @@ class GridViewBuilder extends StatelessWidget {
                                     padding: const EdgeInsets.all(10),
                                     color: Colors.black, // Set background color to black
                                     child: Text(
-                                      item.artistName.toString(),
+                                      item.trackName ?? item.collectionName ?? 'Unknown',
                                       style: const TextStyle(
                                         color: Colors.white,
                                         fontSize: 14,
@@ -339,7 +339,7 @@ class ListViewBuilder extends StatelessWidget {
                                           crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              item.artistName ?? 'Unknown Artist',
+                                              item.trackName ?? item.collectionName ?? 'Unknown',
                                               style: const TextStyle(
                                                 color: Colors.white,
                                                 fontSize: 16,
@@ -349,7 +349,7 @@ class ListViewBuilder extends StatelessWidget {
                                             ),
                                             if (item.collectionName != null)
                                               Text(
-                                                item.collectionName!,
+                                                item.artistName ?? item.collectionName ?? 'Unknown',
                                                 style: const TextStyle(
                                                   color: Colors.white,
                                                   fontSize: 14,
