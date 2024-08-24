@@ -2,13 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:itunesapp/view_models/selected_item_view_model.dart';
 
+/// A screen that allows users to select or deselect media types.
 class SelectableItemsScreen extends ConsumerWidget {
+  /// List of media types available for selection.
   final List<String> _items = ['Album', 'MovieArtist', 'Ebook', 'Movie', 'Musicvideo', 'Podcast', 'Song'];
 
+  /// Creates an instance of [SelectableItemsScreen].
   SelectableItemsScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the selected items state
     final selectedItems = ref.watch(selectedItemsProvider);
 
     return Scaffold(
@@ -21,7 +25,10 @@ class SelectableItemsScreen extends ConsumerWidget {
             Navigator.pop(context, selectedItems); // Return selected items on back
           },
         ),
-        title: const Text('Media', style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold)),
+        title: const Text(
+          'Media',
+          style: TextStyle(color: Colors.white, fontSize: 18, fontWeight: FontWeight.bold),
+        ),
         centerTitle: true,
       ),
       body: ListView.builder(
