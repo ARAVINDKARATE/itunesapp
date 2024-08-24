@@ -45,10 +45,10 @@ class ITunesApiService {
         final data = response.data is String ? jsonDecode(response.data) : response.data;
         return ITunesResponse.fromJson(data);
       } else {
-        throw Exception('Failed to load media items');
+        throw Exception('Failed to load media items: ${response.statusCode}');
       }
     } catch (e) {
-      throw Exception('Error occurred: $e');
+      throw Exception('Error occurred while fetching media items: $e');
     }
   }
 }
