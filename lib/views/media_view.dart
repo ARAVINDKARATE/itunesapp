@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:itunesapp/models/iTunes_response_model.dart';
 import 'package:itunesapp/view_models/media_view_model.dart';
 import 'package:itunesapp/views/preview_view.dart';
@@ -180,9 +181,10 @@ class GridViewBuilder extends StatelessWidget {
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      const SizedBox(height: 10),
                       Container(
                         width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[900], // Set background color to black
+                        color: Colors.grey[900],
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           kind.substring(0, 1).toUpperCase() + kind.substring(1),
@@ -193,17 +195,15 @@ class GridViewBuilder extends StatelessWidget {
                           ),
                         ),
                       ),
-                      const SizedBox(
-                        height: 20,
-                      ),
+                      const SizedBox(height: 10),
                       GridView.builder(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                           crossAxisCount: 3,
                           crossAxisSpacing: 10.0,
-                          mainAxisSpacing: 0,
-                          childAspectRatio: 6 / 8,
+                          mainAxisSpacing: 10.0,
+                          childAspectRatio: 2 / 3,
                         ),
                         itemCount: items.length,
                         itemBuilder: (context, index) {
@@ -217,31 +217,58 @@ class GridViewBuilder extends StatelessWidget {
                                 ),
                               );
                             },
-                            child: GridTile(
+                            child: Card(
+                              color: Colors.grey[900],
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
+                              ),
                               child: Column(
                                 children: [
-                                  Container(
-                                    color: Colors.black, // Set background color to black
+                                  Expanded(
                                     child: Center(
                                       child: Image.network(
                                         item.artworkUrl100.toString(),
+                                        fit: BoxFit.cover,
                                       ),
                                     ),
                                   ),
-                                  Container(
-                                    padding: const EdgeInsets.all(10),
-                                    color: Colors.black, // Set background color to black
-                                    child: Text(
-                                      item.trackName ?? item.collectionName ?? 'Unknown',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                      maxLines: 2,
-                                      textAlign: TextAlign.center,
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          item.trackName ?? item.collectionName ?? 'Unknown',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          maxLines: 2,
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          item.primaryGenreName ?? 'Genre Unknown',
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(255, 176, 98, 8),
+                                            fontSize: 12,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          _formatReleaseDate(item.releaseDate),
+                                          style: const TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 12,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
                                     ),
-                                  )
+                                  ),
                                 ],
                               ),
                             ),
@@ -278,7 +305,7 @@ class ListViewBuilder extends StatelessWidget {
 
     return SingleChildScrollView(
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 10.0),
+        padding: const EdgeInsets.symmetric(vertical: 20.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: groupedByKind.entries.map((entry) {
@@ -291,7 +318,7 @@ class ListViewBuilder extends StatelessWidget {
                     children: [
                       Container(
                         width: MediaQuery.of(context).size.width,
-                        color: Colors.grey[900], // Set background color to black
+                        color: Colors.grey[900],
                         padding: const EdgeInsets.all(10.0),
                         child: Text(
                           kind.substring(0, 1).toUpperCase() + kind.substring(1),
@@ -302,73 +329,91 @@ class ListViewBuilder extends StatelessWidget {
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                        child: Column(
-                          children: items.map((item) {
-                            return GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => PreviewScreen(mediaItem: item),
-                                  ),
-                                );
-                              },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                child: Row(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Container(
-                                      width: MediaQuery.of(context).size.width * 0.3,
-                                      height: MediaQuery.of(context).size.height * 0.16,
-                                      color: Colors.black, // Set background color to black
-                                      child: item.artworkUrl100 != null
-                                          ? Image.network(
-                                              item.artworkUrl100!,
-                                              fit: BoxFit.cover,
-                                            )
-                                          : const Center(child: Text('No Image')),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Expanded(
-                                      child: Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              item.trackName ?? item.collectionName ?? 'Unknown',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 16,
-                                                fontWeight: FontWeight.bold,
-                                              ),
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            if (item.collectionName != null)
-                                              Text(
-                                                item.artistName ?? item.collectionName ?? 'Unknown',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 14,
-                                                  fontWeight: FontWeight.bold,
-                                                ),
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                      const SizedBox(height: 10),
+                      ...items.map((item) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => PreviewScreen(mediaItem: item),
                               ),
                             );
-                          }).toList(),
-                        ),
-                      ),
-                      const SizedBox(height: 20),
+                          },
+                          child: Card(
+                            color: Colors.grey[900],
+                            elevation: 4,
+                            margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Row(
+                              children: [
+                                SizedBox(
+                                  width: MediaQuery.of(context).size.width * 0.3,
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: Image.network(
+                                      item.artworkUrl100!,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(10.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          item.trackName ?? item.collectionName ?? 'Unknown',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        if (item.collectionName != null)
+                                          Text(
+                                            item.artistName ?? item.collectionName ?? 'Unknown',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        const SizedBox(height: 10),
+                                        Text(
+                                          item.primaryGenreName ?? 'Genre Unknown',
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(255, 176, 98, 8),
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.w900,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        const SizedBox(height: 5),
+                                        Text(
+                                          _formatReleaseDate(item.releaseDate),
+                                          style: const TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.normal,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
                     ],
                   )
                 : const SizedBox();
@@ -376,5 +421,25 @@ class ListViewBuilder extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  String _formatReleaseDate(String? releaseDate) {
+    if (releaseDate == null) return 'Unknown';
+    try {
+      final date = DateTime.parse(releaseDate);
+      return DateFormat('MMMM d, yyyy').format(date);
+    } catch (e) {
+      return 'Invalid date';
+    }
+  }
+}
+
+String _formatReleaseDate(String? releaseDate) {
+  if (releaseDate == null) return 'Unknown';
+  try {
+    final date = DateTime.parse(releaseDate);
+    return DateFormat('MMMM d, yyyy').format(date);
+  } catch (e) {
+    return 'Invalid date';
   }
 }
