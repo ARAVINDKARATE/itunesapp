@@ -33,7 +33,7 @@ class ITunesApiService {
           queryParameters: {
             'term': query,
             'media': mediaType,
-            'limit': 30, // Limit results to 30 items per request
+            'limit': 200 / selectedItems.length, // Limit results to 30 items per request
           },
         );
 
