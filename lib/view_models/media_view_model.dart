@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:itunesapp/models/iTunes_response_model.dart';
 import 'package:itunesapp/services/itunes_api_services.dart';
+import 'package:itunesapp/view_models/iTunes_response_view_model.dart';
 
 final mediaItemsProvider = StateNotifierProvider<MediaItemsNotifier, AsyncValue<ITunesResponse>>(
   (ref) => MediaItemsNotifier(),

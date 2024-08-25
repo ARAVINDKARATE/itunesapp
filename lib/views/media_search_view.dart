@@ -12,12 +12,17 @@ class MediaSearchView extends ConsumerWidget {
   /// Creates an instance of [MediaSearchView].
   MediaSearchView({super.key});
 
+  // Controller for the search input field
   final TextEditingController _searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final height = MediaQuery.of(context).size.height;
-    final width = MediaQuery.of(context).size.width;
+    // Get the dimensions of the screen
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
+
+    // Watch the selected items provider for changes
     final selectedItems = ref.watch(selectedItemsProvider);
 
     return Scaffold(
@@ -33,17 +38,17 @@ class MediaSearchView extends ConsumerWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   SizedBox(height: height * 0.1),
-                  _buildLogo(),
+                  _buildLogo(), // Logo at the top
                   SizedBox(height: height * 0.07),
-                  _buildDescriptionText(),
+                  _buildDescriptionText(), // Description text
                   SizedBox(height: height * 0.04),
-                  _buildSearchField(),
+                  _buildSearchField(), // Search input field
                   SizedBox(height: height * 0.04),
-                  _buildParametersDescription(),
+                  _buildParametersDescription(), // Description for parameters
                   SizedBox(height: height * 0.04),
-                  _buildSelectedItems(selectedItems, context, ref),
+                  _buildSelectedItems(selectedItems, context, ref), // Display selected items
                   SizedBox(height: height * 0.04),
-                  _buildSubmitButton(context, ref, width, selectedItems),
+                  _buildSubmitButton(context, ref, width, selectedItems), // Submit button
                 ],
               ),
             ),
@@ -53,22 +58,26 @@ class MediaSearchView extends ConsumerWidget {
     );
   }
 
+  /// Builds the logo widget.
   Widget _buildLogo() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Image.asset('assets/images/iTunes_logo.jpg', height: 36.0),
+        Image.asset('assets/images/iTunes_logo.jpg', height: 36.0), // Logo image
       ],
     );
   }
 
+  /// Builds the description text widget.
   Widget _buildDescriptionText() {
     return const Text(
       'Search for a variety of content from the iTunes store including iBooks, movies, podcasts, music, music videos, and audiobooks',
       style: TextStyle(color: Colors.white, fontSize: 16),
+      textAlign: TextAlign.center,
     );
   }
 
+  /// Builds the search input field widget.
   Widget _buildSearchField() {
     return TextField(
       controller: _searchController,
@@ -88,6 +97,7 @@ class MediaSearchView extends ConsumerWidget {
     );
   }
 
+  /// Builds the parameters description text widget.
   Widget _buildParametersDescription() {
     return const Text(
       'Specify the parameters for the content to be searched',
@@ -95,9 +105,11 @@ class MediaSearchView extends ConsumerWidget {
     );
   }
 
+  /// Builds the selected items widget with a gesture detector to navigate to another screen.
   Widget _buildSelectedItems(List<String> selectedItems, BuildContext context, WidgetRef ref) {
     return GestureDetector(
       onTap: () async {
+        // Navigate to SelectableItemsScreen and get the result
         final result = await Navigator.push(
           context,
           MaterialPageRoute(
@@ -105,6 +117,7 @@ class MediaSearchView extends ConsumerWidget {
           ),
         );
         if (result != null) {
+          // Update the selected items if a result is returned
           ref.read(selectedItemsProvider.notifier).setSelectedItems(result);
         }
       },
@@ -137,6 +150,7 @@ class MediaSearchView extends ConsumerWidget {
     );
   }
 
+  /// Builds the submit button widget with connectivity check and navigation.
   Widget _buildSubmitButton(BuildContext context, WidgetRef ref, double width, List<String> selectedItems) {
     return ElevatedButton(
       onPressed: () async {
@@ -147,8 +161,8 @@ class MediaSearchView extends ConsumerWidget {
             // Check internet connectivity
             final connectivityResult = await (Connectivity().checkConnectivity());
 
-            if (connectivityResult.contains(ConnectivityResult.none)) {
-              // No internet connection
+            if (connectivityResult == ConnectivityResult.none) {
+              // Show a toast if there is no internet connection
               Fluttertoast.showToast(
                 msg: "No internet connection. Please check your connection and try again.",
                 toastLength: Toast.LENGTH_LONG,
@@ -157,10 +171,9 @@ class MediaSearchView extends ConsumerWidget {
                 textColor: Colors.white,
               );
             } else {
-              // Trigger the state update in the provider
+              // Trigger the search and navigate to MediaViewScreen
               ref.read(mediaItemsProvider.notifier).searchMedia(searchQuery, selectedItems);
 
-              // Navigate to the MediaViewScreen immediately
               Navigator.push(
                 context,
                 MaterialPageRoute(
@@ -169,7 +182,7 @@ class MediaSearchView extends ConsumerWidget {
               );
             }
           } catch (error) {
-            // Handle errors
+            // Show a toast if an error occurs
             Fluttertoast.showToast(
               msg: "Error occurred: $error",
               toastLength: Toast.LENGTH_LONG,
@@ -179,8 +192,9 @@ class MediaSearchView extends ConsumerWidget {
             );
           }
         } else {
+          // Show a toast if the search query is empty
           Fluttertoast.showToast(
-            msg: "Please specify Search Keyword",
+            msg: "Please specify a search keyword",
             toastLength: Toast.LENGTH_LONG,
             gravity: ToastGravity.BOTTOM,
             backgroundColor: Colors.grey[800],

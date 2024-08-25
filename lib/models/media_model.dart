@@ -1,22 +1,6 @@
-class ITunesResponse {
-  final int resultCount;
-  final List<MediaItem> results;
-
-  ITunesResponse({required this.resultCount, required this.results});
-
-  factory ITunesResponse.fromJson(Map<String, dynamic> json) {
-    var list = json['results'] as List;
-    List<MediaItem> mediaList = list.map((i) => MediaItem.fromJson(i)).toList();
-    return ITunesResponse(
-      resultCount: json['resultCount'] as int,
-      results: mediaList,
-    );
-  }
-}
-
 class MediaItem {
   final String? wrapperType;
-  final String? kind; // 'song' for tracks, null for other types
+  final String? kind; // 'song' for tracks, 'podcast', 'movie', etc.
   final int? artistId;
   final int? collectionId;
   final int? trackId; // Only used for 'track' type
@@ -46,6 +30,9 @@ class MediaItem {
   final String? contentAdvisoryRating;
   final bool? isStreamable;
   final String? description; // Field for audiobooks or other media types
+  final String? shortDescription; // Field for movies or TV episodes
+  final String? longDescription; // Field for movies or TV episodes
+  final bool? hasITunesExtras; // Field for movies
 
   MediaItem({
     this.wrapperType,
@@ -78,7 +65,10 @@ class MediaItem {
     this.primaryGenreName,
     this.contentAdvisoryRating,
     this.isStreamable,
-    this.description, // New field for description
+    this.description,
+    this.shortDescription,
+    this.longDescription,
+    this.hasITunesExtras,
   });
 
   factory MediaItem.fromJson(Map<String, dynamic> json) {
@@ -113,7 +103,10 @@ class MediaItem {
       primaryGenreName: json['primaryGenreName'] as String?,
       contentAdvisoryRating: json['contentAdvisoryRating'] as String?,
       isStreamable: json['isStreamable'] as bool?,
-      description: json['description'] as String?, // Extract description
+      description: json['description'] as String?,
+      shortDescription: json['shortDescription'] as String?,
+      longDescription: json['longDescription'] as String?,
+      hasITunesExtras: json['hasITunesExtras'] as bool?,
     );
   }
 
@@ -149,7 +142,10 @@ class MediaItem {
     String? primaryGenreName,
     String? contentAdvisoryRating,
     bool? isStreamable,
-    String? description, // New field for description
+    String? description,
+    String? shortDescription,
+    String? longDescription,
+    bool? hasITunesExtras,
   }) {
     return MediaItem(
       wrapperType: wrapperType ?? this.wrapperType,
@@ -182,7 +178,10 @@ class MediaItem {
       primaryGenreName: primaryGenreName ?? this.primaryGenreName,
       contentAdvisoryRating: contentAdvisoryRating ?? this.contentAdvisoryRating,
       isStreamable: isStreamable ?? this.isStreamable,
-      description: description ?? this.description, // Handle description
+      description: description ?? this.description,
+      shortDescription: shortDescription ?? this.shortDescription,
+      longDescription: longDescription ?? this.longDescription,
+      hasITunesExtras: hasITunesExtras ?? this.hasITunesExtras,
     );
   }
 }

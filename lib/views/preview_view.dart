@@ -2,13 +2,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:intl/intl.dart';
-import 'package:itunesapp/models/iTunes_response_model.dart';
+import 'package:itunesapp/models/media_model.dart';
 import 'package:itunesapp/provider/preview_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:itunesapp/utilities/html_to_markdown_util.dart';
 import 'package:itunesapp/widgets/description_section.dart';
 import 'package:itunesapp/widgets/detail_row.dart';
 
+// StateProvider to manage the expansion state of the description section
 final isExpandedProvider = StateProvider<bool>((ref) => false);
 
 class PreviewScreen extends ConsumerWidget {
@@ -18,10 +19,10 @@ class PreviewScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final previewUrl = mediaItem.previewUrl ?? '';
-    final isValidUrl = Uri.tryParse(previewUrl)?.hasAbsolutePath ?? false;
-    final description = HtmlToMarkdownUtil.convert(mediaItem.description ?? "N/A");
-    final isExpanded = ref.watch(isExpandedProvider);
+    final previewUrl = mediaItem.previewUrl ?? ''; // Get the preview URL or default to an empty string
+    final isValidUrl = Uri.tryParse(previewUrl)?.hasAbsolutePath ?? false; // Validate the URL
+    final description = HtmlToMarkdownUtil.convert(mediaItem.shortDescription ?? mediaItem.longDescription ?? mediaItem.description ?? "N/A"); // Convert HTML description to Markdown
+    final isExpanded = ref.watch(isExpandedProvider); // Watch the state of the description expansion
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -30,7 +31,7 @@ class PreviewScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Navigate back to the previous screen
           },
         ),
         title: const Text(
@@ -49,9 +50,9 @@ class PreviewScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildMediaHeader(context, ref),
+              _buildMediaHeader(context, ref), // Builds the media header section
               const SizedBox(height: 20),
-              _buildPreviewSection(context, isValidUrl, previewUrl),
+              _buildPreviewSection(context, isValidUrl, previewUrl), // Builds the preview section
               const SizedBox(height: 10),
               const Divider(color: Colors.white, thickness: 0.4, height: 0.3, indent: 20),
               const SizedBox(height: 20),
@@ -65,7 +66,7 @@ class PreviewScreen extends ConsumerWidget {
                 overflow: TextOverflow.ellipsis,
               ),
               const Divider(color: Colors.white, thickness: 0.4, height: 0.3, indent: 20),
-              _buildDescriptionSection(description, isExpanded, ref),
+              _buildDescriptionSection(description, isExpanded, ref), // Builds the description section
               const Text(
                 'Additional Details',
                 style: TextStyle(
@@ -73,10 +74,9 @@ class PreviewScreen extends ConsumerWidget {
                   fontSize: 18,
                   fontWeight: FontWeight.normal,
                 ),
-                overflow: TextOverflow.ellipsis,
               ),
               const Divider(color: Colors.white, thickness: 0.4, height: 0.3, indent: 20),
-              _buildAdditionalDetails(),
+              _buildAdditionalDetails(), // Builds additional details section
             ],
           ),
         ),
@@ -84,6 +84,7 @@ class PreviewScreen extends ConsumerWidget {
     );
   }
 
+  /// Builds the media header section containing artwork, track info, and preview link
   Widget _buildMediaHeader(BuildContext context, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.only(left: 20),
@@ -97,6 +98,7 @@ class PreviewScreen extends ConsumerWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Display artwork image or placeholder
             Container(
               width: MediaQuery.of(context).size.width * 0.3,
               height: MediaQuery.of(context).size.height * 0.2,
@@ -109,9 +111,14 @@ class PreviewScreen extends ConsumerWidget {
                   : const Center(child: Text('No Image')),
             ),
             const SizedBox(width: 10),
+            // Display track and collection details
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 20, left: 20),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 20,
+                  left: 20,
+                ),
+                height: MediaQuery.of(context).size.height * 0.18,
                 child: Stack(
                   children: [
                     Column(
@@ -126,16 +133,15 @@ class PreviewScreen extends ConsumerWidget {
                           ),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        if (mediaItem.collectionName != null)
-                          Text(
-                            mediaItem.artistName ?? mediaItem.collectionName ?? 'Unknown',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            overflow: TextOverflow.ellipsis,
+                        Text(
+                          mediaItem.artistName ?? mediaItem.collectionName ?? 'Unknown',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
                           ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                         const SizedBox(height: 25),
                         Text(
                           mediaItem.primaryGenreName ?? 'Genre Unknown',
@@ -148,12 +154,10 @@ class PreviewScreen extends ConsumerWidget {
                         ),
                       ],
                     ),
-                    Container(
-                      height: MediaQuery.of(context).size.height * 0.17,
-                    ),
                     Positioned(
                       bottom: 0,
                       right: 10,
+                      // Preview link button
                       child: GestureDetector(
                         onTap: () {
                           ref.read(previewModelProvider).openUrl(mediaItem.trackViewUrl, mediaItem.artistViewUrl);
@@ -188,6 +192,7 @@ class PreviewScreen extends ConsumerWidget {
     );
   }
 
+  /// Builds the preview section with an InAppWebView if the URL is valid
   Widget _buildPreviewSection(BuildContext context, bool isValidUrl, String previewUrl) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,16 +220,16 @@ class PreviewScreen extends ConsumerWidget {
                     ),
                   ),
                   onWebViewCreated: (controller) {
-                    print('WebView created');
+                    debugPrint('WebView created');
                   },
                   onLoadStart: (controller, url) {
-                    print('Loading URL: $url');
+                    debugPrint('Loading URL: $url');
                   },
                   onLoadStop: (controller, url) {
-                    print('Loaded URL: $url');
+                    debugPrint('Loaded URL: $url');
                   },
                   onLoadError: (controller, url, code, message) {
-                    print('Error loading URL: $message');
+                    debugPrint('Error loading URL: $message');
                   },
                 )
               : const Center(
@@ -238,6 +243,7 @@ class PreviewScreen extends ConsumerWidget {
     );
   }
 
+  /// Builds the description section with expandable functionality
   Widget _buildDescriptionSection(String description, bool isExpanded, WidgetRef ref) {
     return Padding(
       padding: const EdgeInsets.all(20.0),
@@ -249,6 +255,7 @@ class PreviewScreen extends ConsumerWidget {
     );
   }
 
+  /// Builds the additional details section displaying extra information about the media item
   Widget _buildAdditionalDetails() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
@@ -257,7 +264,7 @@ class PreviewScreen extends ConsumerWidget {
         children: [
           DetailRow(title: 'Artist Name', value: mediaItem.artistName),
           DetailRow(title: 'Collection Name', value: mediaItem.collectionName),
-          DetailRow(title: 'Track Count', value: mediaItem.trackCount.toString()),
+          DetailRow(title: 'Track Count', value: mediaItem.trackCount?.toString()),
           DetailRow(title: 'Release Date', value: _formatReleaseDate(mediaItem.releaseDate)),
           DetailRow(title: 'Price', value: mediaItem.collectionPrice != null ? '\$${mediaItem.collectionPrice}' : 'N/A'),
           DetailRow(title: 'Country', value: mediaItem.country),
@@ -267,6 +274,7 @@ class PreviewScreen extends ConsumerWidget {
     );
   }
 
+  /// Helper function to format the release date string into a readable format
   String _formatReleaseDate(String? releaseDate) {
     if (releaseDate == null) return 'Unknown';
     try {

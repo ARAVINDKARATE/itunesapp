@@ -2,16 +2,21 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:itunesapp/models/iTunes_response_model.dart';
+import 'package:itunesapp/models/media_model.dart';
+import 'package:itunesapp/view_models/iTunes_response_view_model.dart';
 import 'package:itunesapp/view_models/media_view_model.dart';
 import 'package:itunesapp/views/preview_view.dart';
 
+/// The main screen that displays media items fetched from the iTunes API.
+/// Allows the user to view the items in either Grid or List view.
 class MediaViewScreen extends ConsumerWidget {
   final List<String> selectedItems;
+
   const MediaViewScreen(this.selectedItems, {super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Watch the media items state from the provider
     final mediaItemsState = ref.watch(mediaItemsProvider);
 
     return Scaffold(
@@ -21,7 +26,7 @@ class MediaViewScreen extends ConsumerWidget {
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.white),
           onPressed: () {
-            Navigator.pop(context);
+            Navigator.pop(context); // Navigate back to the previous screen
           },
         ),
         title: const Text(
@@ -35,14 +40,17 @@ class MediaViewScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: mediaItemsState.when(
-        data: (mediaItems) => MediaTabView(mediaItems: mediaItems, selectedItems: selectedItems),
+        data: (mediaItems) => MediaTabView(
+          mediaItems: mediaItems,
+          selectedItems: selectedItems,
+        ),
         loading: () => Center(
           child: Container(
             padding: const EdgeInsets.all(10),
             width: 150,
             height: 50,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10.0), // Adjust the radius as needed
+              borderRadius: BorderRadius.circular(10.0),
               color: Colors.grey[900],
             ),
             child: const Row(
@@ -50,7 +58,7 @@ class MediaViewScreen extends ConsumerWidget {
               children: [
                 CupertinoActivityIndicator(
                   radius: 12.0,
-                  color: Colors.white, // Adjust the size as needed
+                  color: Colors.white,
                 ),
                 SizedBox(width: 30),
                 Text(
@@ -72,27 +80,31 @@ class MediaViewScreen extends ConsumerWidget {
   }
 }
 
+/// A widget that displays media items in either Grid or List view using tabs.
 class MediaTabView extends StatelessWidget {
   final ITunesResponse mediaItems;
   final List<String> selectedItems;
 
-  const MediaTabView({super.key, required this.mediaItems, required this.selectedItems});
+  const MediaTabView({
+    super.key,
+    required this.mediaItems,
+    required this.selectedItems,
+  });
 
   @override
   Widget build(BuildContext context) {
+    // Prepare and filter the media items for display
     final updatedMediaItems = mediaItems.results.map((item) {
-      final updatedItem = item.copyWith(
-        kind: item.kind ?? 'None',
-      );
-      return updatedItem;
+      return item.copyWith(kind: item.kind ?? 'None');
     }).toList();
 
     final filteredResponse = ITunesResponse(
       resultCount: updatedMediaItems.length,
       results: updatedMediaItems,
     );
+
     return DefaultTabController(
-      length: 2,
+      length: 2, // Two tabs for Grid and List views
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: PreferredSize(
@@ -154,6 +166,7 @@ class MediaTabView extends StatelessWidget {
   }
 }
 
+/// A widget that displays media items in a grid view.
 class GridViewBuilder extends StatelessWidget {
   final ITunesResponse mediaItems;
 
@@ -161,8 +174,8 @@ class GridViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Group media items by their kind
     final Map<String, List<MediaItem>> groupedByKind = {};
-
     for (var item in mediaItems.results) {
       if (!groupedByKind.containsKey(item.kind)) {
         groupedByKind[item.kind!] = [];
@@ -193,19 +206,20 @@ class GridViewBuilder extends StatelessWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     const SizedBox(height: 10),
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 10.0),
                       child: GridView.builder(
-                        shrinkWrap: true,
+                        shrinkWrap: true, // Allow the grid to fit its content
                         physics: const NeverScrollableScrollPhysics(),
                         gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                          crossAxisCount: 3, // Reduced the number of columns to make images larger
-                          crossAxisSpacing: 10.0,
-                          mainAxisSpacing: 10.0,
-                          childAspectRatio: 4 / 7, // Set aspect ratio to 1 to make images square
+                          crossAxisCount: 3, // Number of columns in the grid
+                          crossAxisSpacing: 10.0, // Spacing between columns
+                          mainAxisSpacing: 10.0, // Spacing between rows
+                          childAspectRatio: 4 / 7, // Aspect ratio for the grid items
                         ),
                         itemCount: items.length,
                         itemBuilder: (context, index) {
@@ -233,8 +247,8 @@ class GridViewBuilder extends StatelessWidget {
                                       child: Image.network(
                                         item.artworkUrl100.toString(),
                                         fit: BoxFit.cover, // Ensure the image covers the available space
-                                        width: double.infinity, // Ensure the image takes up the entire width
-                                        height: double.infinity, // Ensure the image takes up the entire height
+                                        width: double.infinity, // Full width
+                                        height: double.infinity, // Full height
                                       ),
                                     ),
                                   ),
@@ -289,6 +303,7 @@ class GridViewBuilder extends StatelessWidget {
     );
   }
 
+  /// Formats the release date to a readable string.
   String _formatReleaseDate(String? releaseDate) {
     if (releaseDate == null) return 'Unknown';
     try {
@@ -300,6 +315,7 @@ class GridViewBuilder extends StatelessWidget {
   }
 }
 
+/// A widget that displays media items in a list view.
 class ListViewBuilder extends StatelessWidget {
   final ITunesResponse mediaItems;
 
@@ -307,8 +323,8 @@ class ListViewBuilder extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Group media items by their kind
     final Map<String, List<MediaItem>> groupedByKind = {};
-
     for (var item in mediaItems.results) {
       if (item.kind != null) {
         if (!groupedByKind.containsKey(item.kind)) {
@@ -329,9 +345,7 @@ class ListViewBuilder extends StatelessWidget {
               ? Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(
-                      height: 8,
-                    ),
+                    const SizedBox(height: 8),
                     Container(
                       width: MediaQuery.of(context).size.width,
                       color: Colors.grey[900],
@@ -343,6 +357,7 @@ class ListViewBuilder extends StatelessWidget {
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     ),
                     const SizedBox(height: 10),
@@ -366,8 +381,8 @@ class ListViewBuilder extends StatelessWidget {
                           child: Row(
                             children: [
                               SizedBox(
-                                width: 120, // Adjusted width for larger image
-                                height: 120, // Adjusted height for larger image
+                                width: 120,
+                                height: 120,
                                 child: ClipRRect(
                                   borderRadius: BorderRadius.circular(10),
                                   child: Image.network(
@@ -439,6 +454,7 @@ class ListViewBuilder extends StatelessWidget {
     );
   }
 
+  /// Formats the release date to a readable string.
   String _formatReleaseDate(String? releaseDate) {
     if (releaseDate == null) return 'Unknown';
     try {
