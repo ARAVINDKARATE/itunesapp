@@ -9,6 +9,9 @@ class ITunesApiService {
   final int maxRetries;
   final Duration retryDelay;
 
+  // Simple in-memory cache
+  final Map<String, ITunesResponse> _cache = {};
+
   ITunesApiService({
     this.maxRetries = 3,
     this.retryDelay = const Duration(seconds: 1),
@@ -17,6 +20,7 @@ class ITunesApiService {
             baseUrl: 'https://itunes.apple.com/',
             connectTimeout: const Duration(seconds: 2),
             receiveTimeout: const Duration(seconds: 2),
+            headers: {'Accept-Encoding': 'gzip'},
           ),
         );
 
@@ -61,7 +65,8 @@ class ITunesApiService {
             debugPrint(e.toString());
             throw Exception('Error occurred while fetching media items after $attempt attempts: $e');
           }
-          await Future.delayed(retryDelay);
+          // Exponential backoff for retry delay
+          await Future.delayed(Duration(milliseconds: retryDelay.inMilliseconds * attempt));
         }
       }
       return ITunesResponse(resultCount: 0, results: []);
@@ -78,9 +83,13 @@ class ITunesApiService {
       totalCount += response.resultCount;
     }
 
-    return ITunesResponse(
+    // Create and cache the combined response
+    final combinedResponse = ITunesResponse(
       resultCount: totalCount,
       results: allResults,
     );
+    _cache[query] = combinedResponse;
+
+    return combinedResponse;
   }
 }
