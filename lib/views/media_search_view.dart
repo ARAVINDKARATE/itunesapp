@@ -110,7 +110,7 @@ class MediaSearchView extends ConsumerWidget {
       },
       child: Container(
         width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height * 0.1,
+        height: MediaQuery.of(context).size.height * 0.2,
         padding: const EdgeInsets.all(10.0),
         decoration: BoxDecoration(
           color: Colors.grey[900],

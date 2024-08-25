@@ -61,10 +61,10 @@ class MediaViewScreen extends ConsumerWidget {
             ),
           ),
         ),
-        error: (err, stack) => Center(
+        error: (err, stack) => const Center(
           child: Text(
-            'Error: $err',
-            style: const TextStyle(color: Colors.white),
+            'Error: While Loading the api',
+            style: TextStyle(color: Colors.white),
           ),
         ),
       ),
@@ -104,38 +104,51 @@ class MediaTabView extends StatelessWidget {
                 borderRadius: BorderRadius.circular(10),
                 color: Colors.grey[900],
               ),
-              child: TabBar(
-                indicator: BoxDecoration(
-                  color: Colors.grey[700], // Dark grey color for selected tab
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                labelColor: Colors.white,
-                unselectedLabelColor: Colors.white,
-                labelStyle: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-                indicatorSize: TabBarIndicatorSize.tab,
-                dividerColor: Colors.black,
-                tabs: [
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    alignment: Alignment.center,
-                    child: const Tab(text: 'Grid View'),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width / 2,
-                    alignment: Alignment.center,
-                    child: const Tab(text: 'List View'),
-                  ),
-                ],
-              ),
+              child: filteredResponse.results.isEmpty
+                  ? const SizedBox()
+                  : TabBar(
+                      indicator: BoxDecoration(
+                        color: Colors.grey[700], // Dark grey color for selected tab
+                        borderRadius: BorderRadius.circular(10.0),
+                      ),
+                      labelColor: Colors.white,
+                      unselectedLabelColor: Colors.white,
+                      labelStyle: const TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
+                      indicatorSize: TabBarIndicatorSize.tab,
+                      dividerColor: Colors.black,
+                      tabs: [
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          alignment: Alignment.center,
+                          child: const Tab(text: 'Grid View'),
+                        ),
+                        Container(
+                          width: MediaQuery.of(context).size.width / 2,
+                          alignment: Alignment.center,
+                          child: const Tab(text: 'List View'),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ),
-        body: TabBarView(
-          children: [
-            GridViewBuilder(mediaItems: filteredResponse),
-            ListViewBuilder(mediaItems: filteredResponse),
-          ],
-        ),
+        body: filteredResponse.results.isEmpty
+            ? const Center(
+                child: Text(
+                  'No Results Found',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+              )
+            : TabBarView(
+                children: [
+                  GridViewBuilder(mediaItems: filteredResponse),
+                  ListViewBuilder(mediaItems: filteredResponse),
+                ],
+              ),
       ),
     );
   }
