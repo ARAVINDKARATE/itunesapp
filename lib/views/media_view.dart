@@ -183,91 +183,91 @@ class GridViewBuilder extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    GridView.builder(
-                      shrinkWrap: true,
-                      physics: const NeverScrollableScrollPhysics(),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
-                        crossAxisSpacing: 10.0,
-                        mainAxisSpacing: 10.0,
-                        childAspectRatio: 2 / 3, // Adjust aspect ratio as needed
-                      ),
-                      itemCount: items.length,
-                      itemBuilder: (context, index) {
-                        final item = items[index];
-                        return GestureDetector(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => PreviewScreen(mediaItem: item),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10.0),
+                      child: GridView.builder(
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 3, // Reduced the number of columns to make images larger
+                          crossAxisSpacing: 10.0,
+                          mainAxisSpacing: 10.0,
+                          childAspectRatio: 4 / 7, // Set aspect ratio to 1 to make images square
+                        ),
+                        itemCount: items.length,
+                        itemBuilder: (context, index) {
+                          final item = items[index];
+                          return GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => PreviewScreen(mediaItem: item),
+                                ),
+                              );
+                            },
+                            child: Card(
+                              color: Colors.grey[900],
+                              elevation: 4,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10),
                               ),
-                            );
-                          },
-                          child: Card(
-                            color: Colors.grey[900],
-                            elevation: 4,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              children: [
-                                Expanded(
-                                  child: AspectRatio(
-                                    aspectRatio: 1, // Adjust this as needed
+                              child: Column(
+                                children: [
+                                  Expanded(
                                     child: ClipRRect(
                                       borderRadius: BorderRadius.circular(10),
-                                      child: FittedBox(
-                                        fit: BoxFit.cover,
-                                        child: Image.network(
-                                          item.artworkUrl100.toString(),
-                                        ),
+                                      child: Image.network(
+                                        item.artworkUrl100.toString(),
+                                        fit: BoxFit.cover, // Ensure the image covers the available space
+                                        width: double.infinity, // Ensure the image takes up the entire width
+                                        height: double.infinity, // Ensure the image takes up the entire height
                                       ),
                                     ),
                                   ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        item.trackName ?? item.collectionName ?? 'Unknown',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.bold,
+                                  Padding(
+                                    padding: const EdgeInsets.all(8.0),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          item.trackName ?? item.collectionName ?? 'Unknown',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                          maxLines: 1,
+                                          textAlign: TextAlign.center,
                                         ),
-                                        maxLines: 2,
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        item.primaryGenreName ?? 'Genre Unknown',
-                                        style: const TextStyle(
-                                          color: Color.fromARGB(255, 176, 98, 8),
-                                          fontSize: 12,
+                                        const SizedBox(height: 4),
+                                        Text(
+                                          item.primaryGenreName ?? 'Genre Unknown',
+                                          style: const TextStyle(
+                                            color: Color.fromARGB(255, 176, 98, 8),
+                                            fontSize: 12,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        _formatReleaseDate(item.releaseDate),
-                                        style: const TextStyle(
-                                          color: Colors.blue,
-                                          fontSize: 12,
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          _formatReleaseDate(item.releaseDate),
+                                          style: const TextStyle(
+                                            color: Colors.blue,
+                                            fontSize: 12,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
                                         ),
-                                        overflow: TextOverflow.ellipsis,
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
-                          ),
-                        );
-                      },
-                    ),
+                          );
+                        },
+                      ),
+                    )
                   ],
                 )
               : const SizedBox();
@@ -280,7 +280,7 @@ class GridViewBuilder extends StatelessWidget {
     if (releaseDate == null) return 'Unknown';
     try {
       final date = DateTime.parse(releaseDate);
-      return DateFormat('MMMM d, yyyy').format(date);
+      return DateFormat('MMM d, yyyy').format(date);
     } catch (e) {
       return 'Invalid date';
     }
@@ -317,7 +317,7 @@ class ListViewBuilder extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     const SizedBox(
-                      height: 10,
+                      height: 8,
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width,
@@ -375,7 +375,7 @@ class ListViewBuilder extends StatelessWidget {
                                         style: const TextStyle(
                                           color: Colors.white,
                                           fontSize: 16,
-                                          fontWeight: FontWeight.bold,
+                                          fontWeight: FontWeight.w600,
                                         ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
@@ -430,7 +430,7 @@ class ListViewBuilder extends StatelessWidget {
     if (releaseDate == null) return 'Unknown';
     try {
       final date = DateTime.parse(releaseDate);
-      return DateFormat('MMMM d, yyyy').format(date);
+      return DateFormat('MMM d, yyyy').format(date);
     } catch (e) {
       return 'Invalid date';
     }
