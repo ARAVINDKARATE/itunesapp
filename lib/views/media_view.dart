@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:itunesapp/models/media_model.dart';
+import 'package:itunesapp/provider/media_items_provider.dart';
 import 'package:itunesapp/view_models/itunes_response_view_model.dart';
-import 'package:itunesapp/view_models/media_view_model.dart';
 import 'package:itunesapp/views/preview_view.dart';
 
 /// The main screen that displays media items fetched from the iTunes API.
@@ -62,14 +62,14 @@ class MediaViewScreen extends ConsumerWidget {
                 ),
                 SizedBox(width: 30),
                 Text(
-                  'Loading',
+                  'Loading...',
                   style: TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
           ),
         ),
-        error: (err, stack) => const Center(
+        error: (err, stack) => Center(
           child: Text(
             'Error: While Loading the api',
             style: TextStyle(color: Colors.white),

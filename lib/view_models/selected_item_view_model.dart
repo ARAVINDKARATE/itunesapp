@@ -22,8 +22,3 @@ class SelectedItemsViewModel extends StateNotifier<List<String>> {
     state = items;
   }
 }
-
-/// Provider for managing the selected items state.
-final selectedItemsProvider = StateNotifierProvider<SelectedItemsViewModel, List<String>>(
-  (ref) => SelectedItemsViewModel(),
-);

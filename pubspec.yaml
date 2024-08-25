@@ -52,6 +52,7 @@ dependencies:
   fluttertoast: ^8.2.8
   asn1lib: ^1.5.3
   pointycastle: ^3.9.1
+  webview_flutter: ^2.0.12
 
 dev_dependencies:
   flutter_test:

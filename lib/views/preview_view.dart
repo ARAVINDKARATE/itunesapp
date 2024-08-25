@@ -3,14 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:intl/intl.dart';
 import 'package:itunesapp/models/media_model.dart';
-import 'package:itunesapp/provider/preview_provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:itunesapp/provider/is_expanded_provider.dart';
+import 'package:itunesapp/provider/preview_provider.dart';
 import 'package:itunesapp/utilities/html_to_markdown_util.dart';
 import 'package:itunesapp/widgets/description_section.dart';
 import 'package:itunesapp/widgets/detail_row.dart';
-
-// StateProvider to manage the expansion state of the description section
-final isExpandedProvider = StateProvider<bool>((ref) => false);
 
 class PreviewScreen extends ConsumerWidget {
   final MediaItem mediaItem;
@@ -211,13 +209,16 @@ class PreviewScreen extends ConsumerWidget {
           height: MediaQuery.of(context).size.height * 0.26,
           child: isValidUrl
               ? InAppWebView(
-                  initialUrlRequest: URLRequest(
-                    url: WebUri(previewUrl),
-                  ),
+                  initialUrlRequest: URLRequest(url: WebUri(previewUrl)),
                   initialOptions: InAppWebViewGroupOptions(
                     crossPlatform: InAppWebViewOptions(
-                      javaScriptEnabled: true,
-                    ),
+                        javaScriptEnabled: true,
+                        useOnLoadResource: true,
+                        useShouldOverrideUrlLoading: true,
+                        allowUniversalAccessFromFileURLs: true,
+                        allowFileAccessFromFileURLs: true,
+                        javaScriptCanOpenWindowsAutomatically: true,
+                        mediaPlaybackRequiresUserGesture: false),
                   ),
                   onWebViewCreated: (controller) {
                     debugPrint('WebView created');
@@ -231,10 +232,26 @@ class PreviewScreen extends ConsumerWidget {
                   onLoadError: (controller, url, code, message) {
                     debugPrint('Error loading URL: $message');
                   },
+                  onLoadHttpError: (controller, url, statusCode, description) {
+                    debugPrint('HTTP Error: $description');
+                  },
+                  onConsoleMessage: (controller, consoleMessage) {
+                    debugPrint('Console Message: ${consoleMessage.message}');
+                  },
+                  shouldOverrideUrlLoading: (controller, navigationAction) async {
+                    // Add logging for debugging
+                    debugPrint("Attempting to load URL: ${navigationAction.request.url}");
+
+                    // Let the WebView load the URL normally
+                    return NavigationActionPolicy.ALLOW;
+                  },
+                  onLoadResource: (controller, resource) {
+                    debugPrint('Resource loaded: ${resource.url}');
+                  },
                 )
               : const Center(
                   child: Text(
-                    'Preview URL is not valid',
+                    'Preview Not Available',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

@@ -2,8 +2,8 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:itunesapp/view_models/media_view_model.dart';
-import 'package:itunesapp/view_models/selected_item_view_model.dart';
+import 'package:itunesapp/provider/media_items_provider.dart';
+import 'package:itunesapp/provider/selected_items_provider.dart';
 import 'package:itunesapp/views/media_view.dart';
 import 'package:itunesapp/views/selectable_item_view.dart';
 

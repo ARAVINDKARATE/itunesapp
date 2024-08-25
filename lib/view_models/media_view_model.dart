@@ -3,11 +3,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:itunesapp/services/itunes_api_services.dart';
 import 'package:itunesapp/view_models/itunes_response_view_model.dart';
 
-// Provider for MediaItemsNotifier, managing the state of ITunesResponse
-final mediaItemsProvider = StateNotifierProvider<MediaItemsNotifier, AsyncValue<ITunesResponse>>(
-  (ref) => MediaItemsNotifier(),
-);
-
 class MediaItemsNotifier extends StateNotifier<AsyncValue<ITunesResponse>> {
   final ITunesApiService _apiService;
 

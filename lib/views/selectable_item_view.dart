@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:itunesapp/view_models/selected_item_view_model.dart';
+import 'package:itunesapp/provider/selected_items_provider.dart';
 
 /// A screen that allows users to select or deselect media types.
 class SelectableItemsScreen extends ConsumerWidget {
