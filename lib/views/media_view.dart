@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:itunesapp/models/media_model.dart';
-import 'package:itunesapp/view_models/iTunes_response_view_model.dart';
+import 'package:itunesapp/view_models/itunes_response_view_model.dart';
 import 'package:itunesapp/view_models/media_view_model.dart';
 import 'package:itunesapp/views/preview_view.dart';
 

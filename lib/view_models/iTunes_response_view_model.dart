@@ -7,10 +7,22 @@ class ITunesResponse {
   ITunesResponse({required this.resultCount, required this.results});
 
   factory ITunesResponse.fromJson(Map<String, dynamic> json) {
-    var list = json['results'] as List;
-    List<MediaItem> mediaList = list.map((i) => MediaItem.fromJson(i)).toList();
+    // Safely extract the results list and map it to MediaItem
+    final resultsJson = json['results'] as List<dynamic>? ?? [];
+    final mediaList = resultsJson.map((item) {
+      if (item is Map<String, dynamic>) {
+        return MediaItem.fromJson(item);
+      } else {
+        // Handle or log error if the item is not a valid Map
+        throw const FormatException('Invalid item format in results list');
+      }
+    }).toList();
+
+    // Safely extract resultCount, ensuring it's an integer
+    final resultCount = json['resultCount'] is int ? json['resultCount'] as int : int.tryParse(json['resultCount'].toString()) ?? 0;
+
     return ITunesResponse(
-      resultCount: json['resultCount'] as int,
+      resultCount: resultCount,
       results: mediaList,
     );
   }

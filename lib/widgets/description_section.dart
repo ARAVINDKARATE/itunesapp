@@ -18,12 +18,14 @@ class DescriptionSection extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        // Display the description, either fully expanded or shortened
         MarkdownBody(
           data: isExpanded ? description : _shortenDescription(description),
           styleSheet: MarkdownStyleSheet(
             p: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
           ),
         ),
+        // Show "Read more" or "Show less" if the description is longer than 200 characters
         if (description.length > 200)
           GestureDetector(
             onTap: onToggleExpand,
@@ -36,6 +38,7 @@ class DescriptionSection extends StatelessWidget {
     );
   }
 
+  /// Shortens the description to 200 characters with an ellipsis if it exceeds that length.
   String _shortenDescription(String description) {
     return description.length > 200 ? '${description.substring(0, 200)}...' : description;
   }

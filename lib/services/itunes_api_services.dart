@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:itunesapp/models/media_model.dart';
-import 'package:itunesapp/view_models/iTunes_response_view_model.dart';
+import 'package:itunesapp/view_models/itunes_response_view_model.dart';
 
 class ITunesApiService {
   final Dio _dio;

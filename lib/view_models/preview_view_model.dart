@@ -2,12 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class PreviewViewModel extends ChangeNotifier {
-  void openUrl(String? trackViewUrl, String? artistViewUrl) async {
+  /// Opens a URL from the given [trackViewUrl] or [artistViewUrl].
+  /// If both are null, it will log a message and do nothing.
+  Future<void> openUrl(String? trackViewUrl, String? artistViewUrl) async {
     final url = trackViewUrl ?? artistViewUrl;
+
     if (url != null) {
       final uri = Uri.parse(url);
       debugPrint('Attempting to launch URL: $uri');
+
       try {
+        // Check if the URL can be launched
         if (await canLaunchUrl(uri)) {
           await launchUrl(uri);
         } else {
@@ -15,10 +20,10 @@ class PreviewViewModel extends ChangeNotifier {
           // Optionally, notify the user here with a dialog or a toast
         }
       } catch (e) {
-        print('Error launching URL: $e');
+        debugPrint('Error launching URL: $e');
       }
     } else {
-      print('No valid URL provided');
+      debugPrint('No valid URL provided');
     }
   }
 }

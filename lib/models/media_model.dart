@@ -1,39 +1,41 @@
 class MediaItem {
-  final String? wrapperType;
-  final String? kind; // 'song' for tracks, 'podcast', 'movie', etc.
-  final int? artistId;
-  final int? collectionId;
-  final int? trackId; // Only used for 'track' type
-  final String? artistName;
-  final String? collectionName;
-  final String? trackName; // Only used for 'track' type
-  final String? artistViewUrl;
-  final String? collectionViewUrl;
-  final String? trackViewUrl; // Only used for 'track' type
-  final String? previewUrl;
-  final String? artworkUrl30;
-  final String? artworkUrl60;
-  final String? artworkUrl100;
-  final double? collectionPrice;
-  final double? trackPrice; // Only used for 'track' type
-  final String? releaseDate;
-  final String? collectionExplicitness;
-  final String? trackExplicitness; // Only used for 'track' type
-  final int? discCount; // Only used for 'track' type
-  final int? discNumber; // Only used for 'track' type
-  final int? trackCount; // Only used for 'track' type
-  final int? trackNumber; // Only used for 'track' type
-  final int? trackTimeMillis; // Only used for 'track' type
-  final String? country;
-  final String? currency;
-  final String? primaryGenreName;
-  final String? contentAdvisoryRating;
-  final bool? isStreamable;
-  final String? description; // Field for audiobooks or other media types
-  final String? shortDescription; // Field for movies or TV episodes
-  final String? longDescription; // Field for movies or TV episodes
-  final bool? hasITunesExtras; // Field for movies
+  // Fields
+  final String? wrapperType; // Type of the wrapper (e.g., track, album)
+  final String? kind; // Type of the media item (e.g., song, movie)
+  final int? artistId; // ID of the artist
+  final int? collectionId; // ID of the collection (e.g., album)
+  final int? trackId; // ID of the track
+  final String? artistName; // Name of the artist
+  final String? collectionName; // Name of the collection
+  final String? trackName; // Name of the track
+  final String? artistViewUrl; // URL to view the artist
+  final String? collectionViewUrl; // URL to view the collection
+  final String? trackViewUrl; // URL to view the track
+  final String? previewUrl; // URL to preview the track
+  final String? artworkUrl30; // Artwork URL (30x30)
+  final String? artworkUrl60; // Artwork URL (60x60)
+  final String? artworkUrl100; // Artwork URL (100x100)
+  final double? collectionPrice; // Price of the collection
+  final double? trackPrice; // Price of the track
+  final String? releaseDate; // Release date of the track
+  final String? collectionExplicitness; // Explicitness of the collection
+  final String? trackExplicitness; // Explicitness of the track
+  final int? discCount; // Number of discs in the collection
+  final int? discNumber; // Disc number
+  final int? trackCount; // Number of tracks in the collection
+  final int? trackNumber; // Track number
+  final int? trackTimeMillis; // Track duration in milliseconds
+  final String? country; // Country of the media
+  final String? currency; // Currency for the price
+  final String? primaryGenreName; // Genre of the media
+  final String? contentAdvisoryRating; // Content advisory rating
+  final bool? isStreamable; // Whether the media is streamable
+  final String? description; // Description of the media
+  final String? shortDescription; // Short description of the media
+  final String? longDescription; // Long description of the media
+  final bool? hasITunesExtras; // Whether the media has iTunes extras
 
+  // Constructor
   MediaItem({
     this.wrapperType,
     this.kind,
@@ -71,6 +73,7 @@ class MediaItem {
     this.hasITunesExtras,
   });
 
+  // Factory constructor for creating an instance from JSON
   factory MediaItem.fromJson(Map<String, dynamic> json) {
     return MediaItem(
       wrapperType: json['wrapperType'] as String?,
@@ -110,7 +113,7 @@ class MediaItem {
     );
   }
 
-  // CopyWith method
+  // CopyWith method for creating a modified copy of the instance
   MediaItem copyWith({
     String? wrapperType,
     String? kind,
