@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:itunesapp/services/itunes_api_services.dart';
 import 'package:itunesapp/view_models/itunes_response_view_model.dart';
@@ -26,6 +27,7 @@ class MediaItemsNotifier extends StateNotifier<AsyncValue<ITunesResponse>> {
       state = AsyncValue.data(result); // Update the state with the fetched media items
     } catch (e, stackTrace) {
       // Handle any errors and update the state with the error
+      debugPrint(e.toString());
       state = AsyncValue.error(e, stackTrace);
     }
   }

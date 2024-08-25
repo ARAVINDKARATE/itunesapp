@@ -5,7 +5,7 @@ import 'package:itunesapp/view_models/selected_item_view_model.dart';
 /// A screen that allows users to select or deselect media types.
 class SelectableItemsScreen extends ConsumerWidget {
   /// List of media types available for selection.
-  final List<String> _items = ['ebook', 'tvShow', 'shortFilm', 'audiobook', 'movie', 'musicVideo', 'podcast', 'music'];
+  final List<String> _items = ['audiobook', 'ebook', 'musicVideo', 'music', 'movie', 'podcast', 'shortFilm', 'tvShow'];
 
   /// Creates an instance of [SelectableItemsScreen].
   SelectableItemsScreen({super.key});

@@ -95,7 +95,8 @@ class MediaTabView extends StatelessWidget {
   Widget build(BuildContext context) {
     // Prepare and filter the media items for display
     final updatedMediaItems = mediaItems.results.map((item) {
-      return item.copyWith(kind: item.kind ?? 'None');
+      String kind = item.kind ?? (item.wrapperType == 'audiobook' ? 'audiobook' : 'None');
+      return item.copyWith(kind: kind);
     }).toList();
 
     final filteredResponse = ITunesResponse(

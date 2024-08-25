@@ -102,6 +102,7 @@ class MediaSearchView extends ConsumerWidget {
     return const Text(
       'Specify the parameters for the content to be searched',
       style: TextStyle(color: Colors.white, fontSize: 16),
+      textAlign: TextAlign.center,
     );
   }
 

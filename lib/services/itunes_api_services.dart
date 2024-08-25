@@ -2,14 +2,21 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:itunesapp/models/media_model.dart';
 import 'package:itunesapp/view_models/itunes_response_view_model.dart';
+import 'package:flutter/foundation.dart';
 
 class ITunesApiService {
   final Dio _dio;
+  final int maxRetries;
+  final Duration retryDelay;
 
-  ITunesApiService()
-      : _dio = Dio(
+  ITunesApiService({
+    this.maxRetries = 3,
+    this.retryDelay = const Duration(seconds: 1),
+  }) : _dio = Dio(
           BaseOptions(
             baseUrl: 'https://itunes.apple.com/',
+            connectTimeout: const Duration(seconds: 2),
+            receiveTimeout: const Duration(seconds: 2),
           ),
         );
 
@@ -17,48 +24,63 @@ class ITunesApiService {
   /// If `selectedItems` is empty, it defaults to fetching all media types.
   /// Returns an [ITunesResponse] containing a list of combined results.
   Future<ITunesResponse> fetchMediaItems(String query, List<String> selectedItems) async {
-    try {
-      // If no media type is selected, default to 'all' media types
-      if (selectedItems.isEmpty) {
-        selectedItems = ['all'];
-      }
+    if (selectedItems.isEmpty) {
+      selectedItems = ['all'];
+    }
 
-      List<MediaItem> allResults = [];
-      int totalCount = 0;
+    List<Future<ITunesResponse>> requests = selectedItems.map((mediaType) async {
+      int attempt = 0;
 
-      // Fetch data for each media type in the selectedItems list
-      for (String mediaType in selectedItems) {
-        final response = await _dio.get(
-          'search',
-          queryParameters: {
-            'term': query,
-            'media': mediaType,
-            'limit': 200 / selectedItems.length, // Limit results to 30 items per request
-          },
-        );
+      while (attempt < maxRetries) {
+        try {
+          final response = await _dio.get(
+            'search',
+            queryParameters: {
+              'term': query,
+              'media': mediaType,
+              'limit': 200 ~/ selectedItems.length,
+            },
+          );
 
-        if (response.statusCode == 200) {
-          // Check if the response data is a JSON string and decode it if necessary
-          final data = response.data is String ? jsonDecode(response.data) : response.data;
-          final iTunesResponse = ITunesResponse.fromJson(data);
+          if (response.statusCode == 200) {
+            final data = response.data is String ? jsonDecode(response.data) : response.data;
 
-          // Accumulate results and update the total count
-          allResults.addAll(iTunesResponse.results);
-          totalCount += iTunesResponse.resultCount;
-        } else {
-          // Handle non-200 responses as errors
-          throw Exception('Failed to load media items: ${response.statusCode}');
+            // Explicitly specify the types for compute function
+            final iTunesResponse = await compute<Map<String, dynamic>, ITunesResponse>(
+              ITunesResponse.fromJson,
+              data,
+            );
+
+            return iTunesResponse;
+          } else {
+            throw Exception('Failed to load media items: ${response.statusCode}');
+          }
+        } catch (e) {
+          attempt++;
+          if (attempt >= maxRetries) {
+            debugPrint(e.toString());
+            throw Exception('Error occurred while fetching media items after $attempt attempts: $e');
+          }
+          await Future.delayed(retryDelay);
         }
       }
+      return ITunesResponse(resultCount: 0, results: []);
+    }).toList();
 
-      // Return a single ITunesResponse with combined results and total count
-      return ITunesResponse(
-        resultCount: totalCount,
-        results: allResults,
-      );
-    } catch (e) {
-      // Catch and rethrow any exceptions that occur during the fetch process
-      throw Exception('Error occurred while fetching media items: $e');
+    final responses = await Future.wait(requests);
+
+    // Combine all results from parallel requests
+    List<MediaItem> allResults = [];
+    int totalCount = 0;
+
+    for (var response in responses) {
+      allResults.addAll(response.results);
+      totalCount += response.resultCount;
     }
+
+    return ITunesResponse(
+      resultCount: totalCount,
+      results: allResults,
+    );
   }
 }
