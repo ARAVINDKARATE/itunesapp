@@ -161,7 +161,7 @@ class MediaSearchView extends ConsumerWidget {
             // Check internet connectivity
             final connectivityResult = await (Connectivity().checkConnectivity());
 
-            if (connectivityResult == ConnectivityResult.none) {
+            if (connectivityResult.contains(ConnectivityResult.none)) {
               // Show a toast if there is no internet connection
               Fluttertoast.showToast(
                 msg: "No internet connection. Please check your connection and try again.",
